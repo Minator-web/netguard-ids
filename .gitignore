@@ -7,6 +7,6 @@ dist/
 build/
 *.egg-info/
 reports/*.json
+reports/*.html
 data/*.pcap
 data/*.pcapng
-

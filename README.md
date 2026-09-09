@@ -14,7 +14,9 @@ cross-dataset generalization in network intrusion detection.
 - Monitoring of sensitive services such as SSH and RDP
 - JSON configuration for thresholds and IP allowlists
 - JSONL and optional PCAP/PCAPNG input
+- Authorized live packet capture with real-time terminal alerts
 - Structured JSON incident reports
+- Standalone dark-mode HTML dashboard
 - Automated unit tests and GitHub Actions
 
 ## Quick start
@@ -42,6 +44,30 @@ netguard samples/demo_events.jsonl
 ```
 
 The report is written to `reports/report.json`.
+The browser dashboard is written to `reports/dashboard.html`.
+
+## Live capture
+
+Install the packet-capture extra:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[pcap]"
+```
+
+Then open PowerShell as Administrator and capture for 30 seconds:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.cli --live --duration 30
+```
+
+Open the resulting dashboard:
+
+```powershell
+start reports\dashboard.html
+```
+
+Windows live capture requires Npcap. Interface selection and troubleshooting
+are covered in [`docs/WINDOWS_LIVE_CAPTURE.md`](docs/WINDOWS_LIVE_CAPTURE.md).
 
 ## Analyze a PCAP file
 
