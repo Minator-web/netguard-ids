@@ -10,3 +10,6 @@ reports/*.json
 reports/*.html
 data/*.pcap
 data/*.pcapng
+data/*.csv
+artifacts/*.joblib
+reports/*.csv

@@ -17,6 +17,8 @@ cross-dataset generalization in network intrusion detection.
 - Authorized live packet capture with real-time terminal alerts
 - Structured JSON incident reports
 - Standalone dark-mode HTML dashboard
+- Reproducible flow-based machine-learning baseline
+- Accuracy, macro F1, per-class metrics, and confusion matrix export
 - Automated unit tests and GitHub Actions
 
 ## Quick start
@@ -95,10 +97,41 @@ Each JSONL line represents one network event:
 python -m unittest discover -s tests -v
 ```
 
+## Machine-learning baseline
+
+Install the optional ML dependencies:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[ml]"
+```
+
+Generate deterministic synthetic data to verify the pipeline:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli generate-demo
+```
+
+Train and evaluate the baseline:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli train --dataset data\demo_flows.csv
+```
+
+Run predictions:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli predict --model artifacts\netguard-model.joblib --input data\demo_flows.csv
+```
+
+The generated demo data is synthetic and deliberately separable. Its scores
+only confirm that the software pipeline works; they must never be reported as
+evidence that the model performs well on real network traffic. See
+[`docs/ML_EXPERIMENTS.md`](docs/ML_EXPERIMENTS.md) for the research protocol.
+
 ## Research direction
 
-The next milestone adds flow extraction and reproducible ML experiments on
-UNSW-NB15 and CIC-IDS2017. The main focus will be cross-dataset performance,
+The next research milestone adds dataset adapters and experiments on UNSW-NB15
+and CIC-IDS2017. The main focus will be cross-dataset performance,
 false positives, explainability, and resource cost rather than accuracy alone.
 See [`docs/RESEARCH_ROADMAP.md`](docs/RESEARCH_ROADMAP.md).
 

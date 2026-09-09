@@ -1,8 +1,8 @@
 # Research Roadmap
 
-The current release is a transparent rule-based baseline. It is intentionally
-small enough to audit and reproduce. The research version will compare this
-baseline with machine-learning models under realistic deployment constraints.
+The project combines a transparent rule-based detector with an interpretable
+flow-based machine-learning baseline. The research version will compare these
+approaches under realistic deployment constraints.
 
 ## Research question
 
@@ -11,8 +11,8 @@ to traffic captured outside their training dataset?
 
 ## Planned experiments
 
-1. Normalize common flow features from UNSW-NB15 and CIC-IDS2017.
-2. Train Logistic Regression, Random Forest, and LightGBM baselines.
+1. Add dataset adapters that normalize common flow features from UNSW-NB15 and CIC-IDS2017.
+2. Compare the existing Logistic Regression baseline with Random Forest and LightGBM.
 3. Evaluate both within-dataset and cross-dataset performance.
 4. Report macro F1, per-class recall, false-positive rate, inference latency,
    peak memory usage, and calibration error.
@@ -25,4 +25,3 @@ to traffic captured outside their training dataset?
 NetGuard is an educational and research prototype, not a replacement for a
 production IDS. Results must be reported without overstating real-world
 generalization.
-
