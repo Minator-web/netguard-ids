@@ -19,6 +19,7 @@ cross-dataset generalization in network intrusion detection.
 - Standalone dark-mode HTML dashboard
 - Reproducible flow-based machine-learning baseline
 - Accuracy, macro F1, per-class metrics, and confusion matrix export
+- Validation-only alert-threshold calibration with untouched test evaluation
 - Automated unit tests and GitHub Actions
 
 ## Quick start
@@ -151,9 +152,26 @@ categorical values inside the saved pipeline, and reports accuracy, balanced
 accuracy, macro F1, weighted F1, per-class metrics, and a confusion matrix.
 See [`docs/UNSW_NB15.md`](docs/UNSW_NB15.md).
 
+### Calibrate the binary alert threshold
+
+The default binary model produced a high false-positive rate on the official
+test split. Select a threshold on a held-out part of the training split, then
+compare it once on the untouched official test split:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli calibrate-unsw
+```
+
+The default target is a validation false-positive rate of 10%. Change it with
+`--target-fpr`, for example `--target-fpr 0.05`. The generated Markdown report
+compares false-positive rate, false-negative rate, attack recall, and macro F1.
+The test set never participates in threshold selection; a different test FPR
+is therefore possible and is useful evidence of distribution shift. See
+[`docs/THRESHOLD_CALIBRATION.md`](docs/THRESHOLD_CALIBRATION.md).
+
 ## Research direction
 
-The next research milestone adds a CIC-IDS2017 adapter and shared NetFlow
+The next research milestone adds a CIC-IDS2017 adapter and shared flow
 features. The main focus will be cross-dataset performance,
 false positives, explainability, and resource cost rather than accuracy alone.
 See [`docs/RESEARCH_ROADMAP.md`](docs/RESEARCH_ROADMAP.md).

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 - 2026-09-09
+
+- Add validation-only threshold selection for the binary UNSW-NB15 model.
+- Set a target validation false-positive rate without consulting test labels.
+- Compare default and calibrated thresholds on the untouched official test split.
+- Save the selected threshold with the trained pipeline for reproducible inference.
+- Export a Markdown comparison and add an end-to-end calibration test.
+
 ## 0.4.0 - 2026-09-09
 
 - Add an adapter for the official UNSW-NB15 training and testing files.

@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 
 from .ml import generate_demo_dataset, predict_csv, train_model
-from .unsw import train_unsw_model
+from .unsw import calibrate_unsw_threshold, train_unsw_model
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -35,6 +35,19 @@ def build_parser() -> argparse.ArgumentParser:
     unsw.add_argument("--metrics", default="reports/unsw-nb15-metrics.json")
     unsw.add_argument("--summary", default="reports/unsw-nb15-summary.md")
     unsw.add_argument("--seed", type=int, default=42)
+
+    calibrate = commands.add_parser(
+        "calibrate-unsw",
+        help="Select a binary alert threshold on validation data",
+    )
+    calibrate.add_argument("--train", default="data/UNSW_NB15_training-set.csv")
+    calibrate.add_argument("--test", default="data/UNSW_NB15_testing-set.csv")
+    calibrate.add_argument("--target-fpr", type=float, default=0.10)
+    calibrate.add_argument("--validation-size", type=float, default=0.20)
+    calibrate.add_argument("--model", default="artifacts/unsw-calibrated.joblib")
+    calibrate.add_argument("--metrics", default="reports/unsw-calibration.json")
+    calibrate.add_argument("--summary", default="reports/unsw-calibration.md")
+    calibrate.add_argument("--seed", type=int, default=42)
     return parser
 
 
@@ -82,6 +95,37 @@ def main() -> int:
             if metrics["false_positive_rate"] is not None:
                 print(f"False-positive rate: {metrics['false_positive_rate']:.4f}")
                 print(f"False-negative rate: {metrics['false_negative_rate']:.4f}")
+            print(f"Model: {args.model}")
+            print(f"Metrics: {args.metrics}")
+            print(f"Summary: {args.summary}")
+        elif args.command == "calibrate-unsw":
+            metrics = calibrate_unsw_threshold(
+                args.train,
+                args.test,
+                args.model,
+                args.metrics,
+                args.summary,
+                target_fpr=args.target_fpr,
+                validation_size=args.validation_size,
+                seed=args.seed,
+            )
+            default = metrics["default_test_metrics"]
+            calibrated = metrics["calibrated_test_metrics"]
+            print(f"Target validation FPR: {metrics['target_validation_fpr']:.4f}")
+            print(f"Selected threshold: {metrics['selected_threshold']:.6f}")
+            print(f"Achieved validation FPR: {metrics['achieved_validation_fpr']:.4f}")
+            print(f"Achieved validation recall: {metrics['achieved_validation_recall']:.4f}")
+            print("Official test comparison:")
+            print(
+                f"  Default    FPR={default['false_positive_rate']:.4f} "
+                f"FNR={default['false_negative_rate']:.4f} "
+                f"Macro-F1={default['macro_f1']:.4f}"
+            )
+            print(
+                f"  Calibrated FPR={calibrated['false_positive_rate']:.4f} "
+                f"FNR={calibrated['false_negative_rate']:.4f} "
+                f"Macro-F1={calibrated['macro_f1']:.4f}"
+            )
             print(f"Model: {args.model}")
             print(f"Metrics: {args.metrics}")
             print(f"Summary: {args.summary}")
