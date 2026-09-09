@@ -17,7 +17,7 @@ class NetworkEvent:
     size_bytes: int = 0
 
     @classmethod
-    def from_dict(cls, value: dict[str, Any]) -> "NetworkEvent":
+    def from_dict(cls, value: dict[str, Any]) -> NetworkEvent:
         required = {"timestamp", "src_ip", "dst_ip", "src_port", "dst_port", "protocol"}
         missing = required.difference(value)
         if missing:

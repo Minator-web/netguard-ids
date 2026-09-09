@@ -128,10 +128,33 @@ only confirm that the software pipeline works; they must never be reported as
 evidence that the model performs well on real network traffic. See
 [`docs/ML_EXPERIMENTS.md`](docs/ML_EXPERIMENTS.md) for the research protocol.
 
+## UNSW-NB15 real-data baseline
+
+Download the official `UNSW_NB15_training-set.csv` and
+`UNSW_NB15_testing-set.csv` files into `data/`. Dataset files are ignored by
+Git and must not be committed to this repository.
+
+Run the binary baseline on the complete official split:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli train-unsw
+```
+
+For the ten-class experiment:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli train-unsw --task multiclass --model artifacts\unsw-multiclass.joblib --metrics reports\unsw-multiclass.json --summary reports\unsw-multiclass.md
+```
+
+The command preserves the supplied training/testing split, handles missing and
+categorical values inside the saved pipeline, and reports accuracy, balanced
+accuracy, macro F1, weighted F1, per-class metrics, and a confusion matrix.
+See [`docs/UNSW_NB15.md`](docs/UNSW_NB15.md).
+
 ## Research direction
 
-The next research milestone adds dataset adapters and experiments on UNSW-NB15
-and CIC-IDS2017. The main focus will be cross-dataset performance,
+The next research milestone adds a CIC-IDS2017 adapter and shared NetFlow
+features. The main focus will be cross-dataset performance,
 false positives, explainability, and resource cost rather than accuracy alone.
 See [`docs/RESEARCH_ROADMAP.md`](docs/RESEARCH_ROADMAP.md).
 

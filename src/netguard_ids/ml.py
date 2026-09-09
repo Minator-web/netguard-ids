@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from pathlib import Path
 import csv
 import json
 import random
-
+from datetime import datetime, timezone
+from pathlib import Path
 
 FEATURE_COLUMNS = [
     "duration_ms",
@@ -29,7 +28,12 @@ def _load_ml_dependencies():
         import pandas as pd
         from sklearn.compose import ColumnTransformer
         from sklearn.linear_model import LogisticRegression
-        from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
+        from sklearn.metrics import (
+            accuracy_score,
+            classification_report,
+            confusion_matrix,
+            f1_score,
+        )
         from sklearn.model_selection import train_test_split
         from sklearn.pipeline import Pipeline
         from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -170,9 +174,9 @@ def train_model(
     metrics = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "dataset": str(dataset_path),
-        "dataset_rows": int(len(frame)),
-        "train_rows": int(len(train_x)),
-        "test_rows": int(len(test_x)),
+        "dataset_rows": len(frame),
+        "train_rows": len(train_x),
+        "test_rows": len(test_x),
         "random_seed": seed,
         "test_size": test_size,
         "labels": classes,
@@ -217,4 +221,4 @@ def predict_csv(model_path: str | Path, input_path: str | Path, output_path: str
     destination = Path(output_path)
     destination.parent.mkdir(parents=True, exist_ok=True)
     result.to_csv(destination, index=False)
-    return int(len(result))
+    return len(result)

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0 - 2026-09-09
+
+- Add an adapter for the official UNSW-NB15 training and testing files.
+- Add binary and ten-class experiment modes.
+- Preserve the official split and exclude identifier and target leakage.
+- Report balanced accuracy, macro/weighted F1, false-positive rate, per-class
+  metrics, and confusion matrices.
+- Export a human-readable Markdown experiment summary and model coefficients.
+- Add an end-to-end UNSW adapter test.
+
 ## 0.3.0 - 2026-09-09
 
 - Add a reproducible flow-based Logistic Regression baseline.

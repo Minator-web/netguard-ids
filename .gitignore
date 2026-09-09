@@ -11,5 +11,7 @@ reports/*.html
 data/*.pcap
 data/*.pcapng
 data/*.csv
+data/**/*.csv
 artifacts/*.joblib
 reports/*.csv
+reports/*.md

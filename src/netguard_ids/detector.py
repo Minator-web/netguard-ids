@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import json
 from collections import defaultdict, deque
 from pathlib import Path
-import json
 
 from .models import Alert, NetworkEvent
 
@@ -17,7 +17,7 @@ class RuleEngine:
         self._last_alert: dict[tuple[str, str], float] = {}
 
     @classmethod
-    def from_file(cls, path: str | Path) -> "RuleEngine":
+    def from_file(cls, path: str | Path) -> RuleEngine:
         with Path(path).open(encoding="utf-8") as handle:
             return cls(json.load(handle))
 
