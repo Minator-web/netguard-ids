@@ -1,0 +1,21 @@
+{
+  "port_scan": {
+    "enabled": true,
+    "window_seconds": 10,
+    "unique_ports": 8,
+    "cooldown_seconds": 15
+  },
+  "syn_flood": {
+    "enabled": true,
+    "window_seconds": 5,
+    "syn_packets": 20,
+    "cooldown_seconds": 10
+  },
+  "sensitive_ports": {
+    "enabled": true,
+    "ports": [21, 22, 23, 3389, 5900],
+    "allowlist": [],
+    "cooldown_seconds": 30
+  }
+}
+
