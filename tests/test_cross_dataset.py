@@ -17,6 +17,7 @@ from netguard_ids.cross_dataset import (
 )
 from netguard_ids.drift import analyze_domain_shift
 from netguard_ids.robustness import PREPROCESSING_NAMES, compare_source_only_preprocessing
+from netguard_ids.third_dataset import evaluate_locked_on_ton
 from netguard_ids.unsw import UNSW_NUMERIC_FEATURES
 
 
@@ -66,6 +67,25 @@ class CrossDatasetTests(unittest.TestCase):
                     " Fwd IAT Mean": magnitude * 1_000,
                     " Bwd IAT Mean": magnitude * 1_000,
                     " Label": "DoS Hulk" if attack else "BENIGN",
+                }
+            )
+        return pd.DataFrame(values)
+
+    @staticmethod
+    def _ton_frame(rows: int):
+        values = []
+        for index in range(rows):
+            attack = index % 2 == 1
+            magnitude = 50.0 + index % 5 if attack else 1.0 + index % 3
+            values.append(
+                {
+                    "duration": 5.0 if attack else 1.0,
+                    "src_pkts": magnitude,
+                    "dst_pkts": magnitude,
+                    "src_bytes": magnitude * 100,
+                    "dst_bytes": magnitude * 80,
+                    "label": 1 if attack else 0,
+                    "type": "scanning" if attack else "normal",
                 }
             )
         return pd.DataFrame(values)
@@ -198,6 +218,43 @@ class CrossDatasetTests(unittest.TestCase):
             self.assertIn(
                 "Selection locked before target evaluation: yes",
                 summary.read_text(encoding="utf-8"),
+            )
+
+    def test_locked_artifact_is_evaluated_on_ton_without_fitting(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            unsw = root / "UNSW.csv"
+            cic = root / "CIC.csv"
+            ton = root / "TON_IoT_Train_Test_Network.csv"
+            models = root / "robust.joblib"
+            self._unsw_frame(140).to_csv(unsw, index=False)
+            self._cic_frame(40).to_csv(cic, index=False)
+            self._ton_frame(60).to_csv(ton, index=False)
+            compare_source_only_preprocessing(
+                unsw,
+                cic,
+                models,
+                root / "robust.json",
+                root / "robust.md",
+                chunk_size=17,
+            )
+
+            metrics = evaluate_locked_on_ton(
+                models,
+                ton,
+                root / "ton.json",
+                root / "ton.md",
+                chunk_size=19,
+            )
+
+            self.assertEqual(metrics["target_rows"], 60)
+            self.assertFalse(metrics["model_or_threshold_fitting_on_ton"])
+            self.assertIn("standard", metrics["results"])
+            self.assertIn(metrics["source_selected_pipeline"], metrics["results"])
+            self.assertEqual(len(metrics["unavailable_features_imputed_from_source"]), 2)
+            self.assertIn(
+                "Model or threshold fitting on ToN-IoT: no",
+                (root / "ton.md").read_text(encoding="utf-8"),
             )
 
 

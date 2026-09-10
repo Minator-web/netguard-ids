@@ -6,6 +6,7 @@ from .cross_dataset import benchmark_cross_dataset_models, run_cross_dataset_exp
 from .drift import analyze_domain_shift
 from .ml import generate_demo_dataset, predict_csv, train_model
 from .robustness import compare_source_only_preprocessing
+from .third_dataset import evaluate_locked_on_ton
 from .unsw import calibrate_unsw_threshold, train_unsw_model
 
 
@@ -108,6 +109,17 @@ def build_parser() -> argparse.ArgumentParser:
     robust.add_argument("--metrics", default="reports/robust-preprocessing.json")
     robust.add_argument("--summary", default="reports/robust-preprocessing.md")
     robust.add_argument("--seed", type=int, default=42)
+
+    third = commands.add_parser(
+        "evaluate-ton",
+        help="Evaluate locked v0.9 pipelines on ToN-IoT Network",
+    )
+    third.add_argument("--model", default="artifacts/robust-preprocessing.joblib")
+    third.add_argument("--ton", default="data/TON_IoT_Train_Test_Network.csv")
+    third.add_argument("--chunk-size", type=int, default=100_000)
+    third.add_argument("--max-rows", type=int)
+    third.add_argument("--metrics", default="reports/ton-evaluation.json")
+    third.add_argument("--summary", default="reports/ton-evaluation.md")
     return parser
 
 
@@ -273,6 +285,28 @@ def main() -> int:
                     f"target-AUC={target['roc_auc']:.4f}"
                 )
             print(f"Models: {args.models}")
+            print(f"Metrics: {args.metrics}")
+            print(f"Summary: {args.summary}")
+        elif args.command == "evaluate-ton":
+            metrics = evaluate_locked_on_ton(
+                args.model,
+                args.ton,
+                args.metrics,
+                args.summary,
+                chunk_size=args.chunk_size,
+                max_rows=args.max_rows,
+            )
+            print("Locked third-dataset evaluation: ToN-IoT Network")
+            print(f"Rows: {metrics['target_rows']}")
+            print(f"Source-selected pipeline: {metrics['source_selected_pipeline']}")
+            for name, result in metrics["results"].items():
+                values = result["metrics"]
+                print(
+                    f"{name}: Macro-F1={values['macro_f1']:.4f} "
+                    f"FPR={values['false_positive_rate']:.4f} "
+                    f"FNR={values['false_negative_rate']:.4f} "
+                    f"AUC={values['roc_auc']:.4f}"
+                )
             print(f"Metrics: {args.metrics}")
             print(f"Summary: {args.summary}")
         elif args.command == "calibrate-unsw":

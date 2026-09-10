@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0 - 2026-09-10
+
+- Add a chunked adapter for the ToN-IoT Network train/test CSV.
+- Load the baseline and source-selected pipelines unchanged from the v0.9 artifact.
+- Evaluate the pre-registered comparison without fitting or threshold tuning on ToN-IoT.
+- Map five direct and three derived flow features across datasets.
+- Use source-fitted imputation for two unavailable inter-arrival-time features.
+- Export per-file counts, metrics, baseline differences, and limitations.
+- Add an end-to-end regression test for the locked third-dataset protocol.
+- Record the complete 211,043-row evaluation and failed replication result.
+
 ## 0.9.0 - 2026-09-10
 
 - Compare standard, robust, and quantile-normal preprocessing.

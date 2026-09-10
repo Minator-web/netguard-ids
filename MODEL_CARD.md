@@ -43,5 +43,18 @@ Gradient Boosting under the same protocol. The nonlinear models improved UNSW
 validation macro F1 above 0.93 but transferred worse to CIC. Complete results
 are in [`docs/MODEL_BENCHMARK_RESULTS.md`](docs/MODEL_BENCHMARK_RESULTS.md).
 
+Version 0.9 selected quantile-normal preprocessing using only UNSW validation.
+On CIC, it improved macro F1 from 0.4494 to 0.5433 and reduced false-positive
+rate from 0.5443 to 0.3850 relative to standard scaling. This remains a
+dataset-specific result pending the locked ToN-IoT evaluation added in version
+1.0. See
+[`docs/ROBUST_PREPROCESSING_RESULTS.md`](docs/ROBUST_PREPROCESSING_RESULTS.md).
+
+The version 1.0 locked evaluation did not replicate that improvement on
+211,043 ToN-IoT rows. Quantile-normal macro F1 was 0.3956 versus 0.5440 for
+standard scaling, and both pipelines showed poor discrimination. Neither is
+suitable for operational ToN-IoT deployment. See
+[`docs/THIRD_DATASET_RESULTS.md`](docs/THIRD_DATASET_RESULTS.md).
+
 The cross-dataset model uses ten harmonized numeric flow features. It is a
 research baseline and is not suitable for operational deployment.

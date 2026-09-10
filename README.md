@@ -24,6 +24,7 @@ cross-dataset generalization in network intrusion detection.
 - Leakage-aware three-model cross-dataset benchmark with runtime measurements
 - Label-free feature-drift diagnostics across source and target datasets
 - Source-only robust-preprocessing comparison with locked target evaluation
+- Third-dataset evaluation of locked pipelines on ToN-IoT Network
 - Automated unit tests and GitHub Actions
 
 ## Quick start
@@ -246,10 +247,29 @@ run, the source-selected quantile-normal pipeline improved target macro F1 from
 0.4494 to 0.5433 and reduced target FPR from 0.5443 to 0.3850. See the
 [`full-dataset results`](docs/ROBUST_PREPROCESSING_RESULTS.md).
 
+### Validate on a third dataset
+
+Download the ToN-IoT network train/test CSV and place it at
+`data/TON_IoT_Train_Test_Network.csv`. Then evaluate the unchanged standard
+baseline and the previously source-selected pipeline:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli evaluate-ton
+```
+
+The command loads the existing v0.9 artifact; it does not fit or select a
+model, transformer, feature set, or threshold using ToN-IoT. Eight inputs are
+available or derived, while two IAT inputs are filled by the already-fitted
+source imputers. See
+[`docs/THIRD_DATASET_TON_IOT.md`](docs/THIRD_DATASET_TON_IOT.md). On the full
+211,043-row evaluation, quantile-normal preprocessing did not replicate its CIC
+improvement: macro F1 fell from the standard baseline's 0.5440 to 0.3956. See
+the [`full third-dataset results`](docs/THIRD_DATASET_RESULTS.md).
+
 ## Research direction
 
-The next research milestone will validate any source-selected robustness
-finding on a third untouched dataset. The focus
+The next research milestone will analyze why the locked mitigation failed and
+quantify uncertainty without changing the registered model choice. The focus
 remains cross-dataset performance, false positives,
 explainability, and resource cost rather than accuracy alone.
 See [`docs/RESEARCH_ROADMAP.md`](docs/RESEARCH_ROADMAP.md).
