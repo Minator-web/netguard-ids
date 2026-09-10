@@ -1,27 +1,32 @@
-# Research Roadmap
-
-The project combines a transparent rule-based detector with an interpretable
-flow-based machine-learning baseline. The research version will compare these
-approaches under realistic deployment constraints.
+# Research roadmap
 
 ## Research question
 
 How well do lightweight and explainable intrusion-detection models generalize
 to traffic captured outside their training dataset?
 
-## Planned experiments
+## Completed
 
-1. Add dataset adapters that normalize common flow features from UNSW-NB15 and CIC-IDS2017.
-2. Compare the existing Logistic Regression baseline with Random Forest and LightGBM.
-3. Evaluate both within-dataset and cross-dataset performance.
-4. Report macro F1, per-class recall, false-positive rate, inference latency,
-   peak memory usage, and calibration error.
-5. Explain predictions with SHAP and compare explanations across datasets.
-6. Release preprocessing code, fixed random seeds, dependency versions, and
-   result tables required to reproduce every experiment.
+1. Built explainable rules for port scans, SYN floods, and sensitive services.
+2. Added JSONL, PCAP/PCAPNG, and authorized live-capture paths.
+3. Added UNSW-NB15, CIC-IDS2017, and ToN-IoT dataset adapters.
+4. Preserved source-only fitting and validation-based threshold calibration.
+5. Compared linear, random-forest, and histogram-gradient-boosting models.
+6. Measured feature drift without CIC labels.
+7. Locked a source-selected mitigation before target evaluation.
+8. Tested that mitigation unchanged on a third dataset and recorded the failed
+   replication.
+
+## Next research work
+
+1. Add confidence intervals using a pre-specified flow-level bootstrap.
+2. Analyze errors by attack category without changing the locked classifier.
+3. Measure peak memory and end-to-end runtime consistently across datasets.
+4. Compare explanations across domains using a fixed interpretation protocol.
+5. Package the methodology and limitations as a short research manuscript.
 
 ## Claim discipline
 
 NetGuard is an educational and research prototype, not a replacement for a
-production IDS. Results must be reported without overstating real-world
-generalization.
+production IDS. Future experiments must preserve the distinction between
+exploratory targets, validation data, and untouched confirmation datasets.

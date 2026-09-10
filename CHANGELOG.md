@@ -10,6 +10,9 @@
 - Export per-file counts, metrics, baseline differences, and limitations.
 - Add an end-to-end regression test for the locked third-dataset protocol.
 - Record the complete 211,043-row evaluation and failed replication result.
+- Add a consolidated experiment summary and reproducibility guide.
+- Add release notes, software citation metadata, and a security policy.
+- Promote the core protocol and results to the top of the README.
 
 ## 0.9.0 - 2026-09-10
 

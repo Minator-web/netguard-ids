@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use NetGuard IDS in research, please cite this software."
+title: "NetGuard IDS: Explainable Cross-Dataset Intrusion Detection Research Prototype"
+type: software
+authors:
+  - family-names: "Farshad"
+    given-names: "Amir"
+repository-code: "https://github.com/Minator-web/netguard-ids"
+url: "https://github.com/Minator-web/netguard-ids"
+version: 1.0.0
+date-released: 2026-09-10
+license: MIT
+keywords:
+  - intrusion detection
+  - cybersecurity
+  - domain shift
+  - cross-dataset evaluation
+  - machine learning

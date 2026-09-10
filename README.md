@@ -1,11 +1,54 @@
 # NetGuard IDS
 
-NetGuard is a lightweight and explainable network intrusion detection system.
-It analyzes normalized network events or PCAP captures, detects suspicious
-behavior with auditable rules, and produces a machine-readable incident report.
+[![Tests](https://github.com/Minator-web/netguard-ids/actions/workflows/tests.yml/badge.svg)](https://github.com/Minator-web/netguard-ids/actions/workflows/tests.yml)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Status](https://img.shields.io/badge/status-research%20prototype-orange)
 
-This repository is the reproducible baseline for a planned study of
-cross-dataset generalization in network intrusion detection.
+An explainable hybrid intrusion-detection research prototype combining
+auditable network rules with leakage-aware machine-learning experiments.
+NetGuard processes normalized events and authorized packet captures, produces
+JSON and HTML incident reports, and studies how flow-based detectors fail when
+traffic moves between UNSW-NB15, CIC-IDS2017, and ToN-IoT.
+
+## Research outcome
+
+The main result is not an inflated within-dataset accuracy score. It is a
+reproducible demonstration that a mitigation which improved one external
+dataset did not generalize to a third dataset.
+
+| Evaluation | Pipeline | Macro F1 | FPR | FNR | ROC AUC |
+| --- | --- | ---: | ---: | ---: | ---: |
+| UNSW validation | Standard baseline | 0.7361 | 0.0999 | 0.3298 | 0.9062 |
+| CIC-IDS2017 | Standard baseline | 0.4494 | 0.5443 | 0.4038 | 0.5655 |
+| CIC-IDS2017 | Quantile-normal | 0.5433 | 0.3850 | 0.4163 | 0.6012 |
+| ToN-IoT | Standard baseline | 0.5440 | 0.6309 | 0.2699 | 0.5268 |
+| ToN-IoT | Quantile-normal, locked | 0.3956 | 0.6481 | 0.5313 | 0.4557 |
+
+Quantile-normal preprocessing was selected using UNSW validation only and
+improved the complete 2,830,743-row CIC evaluation. The same locked pipeline
+then performed worse than the baseline on all 211,043 ToN-IoT rows. This
+rejects a universal robustness claim and shows why independent external
+validation matters. See the
+[`experiment summary`](docs/EXPERIMENT_SUMMARY.md).
+
+![Cross-dataset Macro F1 comparison](docs/assets/cross-dataset-macro-f1.svg)
+
+## Experimental protocol
+
+```mermaid
+flowchart TD
+    A["UNSW fit partition"] --> B["Fit candidate pipelines"]
+    C["UNSW validation partition"] --> D["Select threshold and pipeline"]
+    B --> D
+    D --> E["Lock quantile-normal pipeline"]
+    E --> F["CIC-IDS2017 evaluation"]
+    E --> G["ToN-IoT confirmation"]
+```
+
+Target labels never participate in fitting, preprocessing, threshold
+calibration, or source-side candidate selection. The ToN-IoT run loads the
+previously saved v0.9 artifact unchanged.
 
 ## Current capabilities
 
@@ -102,6 +145,9 @@ Each JSONL line represents one network event:
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+The full environment and experiment order are documented in
+[`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md).
 
 ## Machine-learning baseline
 

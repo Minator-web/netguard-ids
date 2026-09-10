@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" viewBox="0 0 1000 500" role="img" aria-labelledby="title desc">
+  <title id="title">Cross-dataset macro F1</title>
+  <desc id="desc">Bar chart comparing standard and quantile-normal preprocessing on CIC-IDS2017 and ToN-IoT.</desc>
+  <rect width="1000" height="500" rx="16" fill="#ffffff"/>
+  <text x="60" y="48" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#172033">Cross-dataset Macro F1</text>
+  <text x="60" y="76" font-family="Arial, sans-serif" font-size="15" fill="#526079">The CIC improvement did not replicate on the locked ToN-IoT evaluation</text>
+
+  <g stroke="#dce2ec" stroke-width="1">
+    <line x1="90" y1="390" x2="950" y2="390"/>
+    <line x1="90" y1="320" x2="950" y2="320"/>
+    <line x1="90" y1="250" x2="950" y2="250"/>
+    <line x1="90" y1="180" x2="950" y2="180"/>
+    <line x1="90" y1="110" x2="950" y2="110"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#667085" text-anchor="end">
+    <text x="78" y="395">0.0</text>
+    <text x="78" y="325">0.2</text>
+    <text x="78" y="255">0.4</text>
+    <text x="78" y="185">0.6</text>
+    <text x="78" y="115">0.8</text>
+  </g>
+
+  <rect x="150" y="232.7" width="130" height="157.3" rx="6" fill="#3972d5"/>
+  <rect x="350" y="199.8" width="130" height="190.2" rx="6" fill="#e67e22"/>
+  <rect x="590" y="199.6" width="130" height="190.4" rx="6" fill="#3972d5"/>
+  <rect x="790" y="251.5" width="130" height="138.5" rx="6" fill="#e67e22"/>
+
+  <g font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#172033" text-anchor="middle">
+    <text x="215" y="220">0.4494</text>
+    <text x="415" y="187">0.5433</text>
+    <text x="655" y="187">0.5440</text>
+    <text x="855" y="239">0.3956</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="14" fill="#344054" text-anchor="middle">
+    <text x="215" y="420">CIC-IDS2017</text>
+    <text x="215" y="440">Standard</text>
+    <text x="415" y="420">CIC-IDS2017</text>
+    <text x="415" y="440">Quantile-normal</text>
+    <text x="655" y="420">ToN-IoT</text>
+    <text x="655" y="440">Standard</text>
+    <text x="855" y="420">ToN-IoT</text>
+    <text x="855" y="440">Quantile-normal</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#526079">
+    <rect x="704" y="35" width="14" height="14" rx="2" fill="#3972d5"/>
+    <text x="726" y="47">Standard</text>
+    <rect x="810" y="35" width="14" height="14" rx="2" fill="#e67e22"/>
+    <text x="832" y="47">Quantile-normal</text>
+  </g>
+</svg>
