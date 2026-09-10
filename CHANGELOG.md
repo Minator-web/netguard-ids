@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.0 - 2026-09-10
+
+- Compare standard, robust, and quantile-normal preprocessing.
+- Fit every transformer only on the UNSW training partition.
+- Calibrate thresholds and select the candidate only on UNSW validation data.
+- Lock the source-selected winner before reading CIC-IDS2017.
+- Evaluate all unchanged pipelines on identical CIC rows in one pass.
+- Export reproducible metrics, fitted pipelines, and a Markdown report.
+- Add an end-to-end leakage-control regression test.
+- Record the complete 2,830,743-row run and baseline-relative improvements.
+
 ## 0.8.0 - 2026-09-10
 
 - Add unlabeled feature-drift analysis from UNSW-NB15 to CIC-IDS2017.

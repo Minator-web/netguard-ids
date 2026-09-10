@@ -5,6 +5,7 @@ import argparse
 from .cross_dataset import benchmark_cross_dataset_models, run_cross_dataset_experiment
 from .drift import analyze_domain_shift
 from .ml import generate_demo_dataset, predict_csv, train_model
+from .robustness import compare_source_only_preprocessing
 from .unsw import calibrate_unsw_threshold, train_unsw_model
 
 
@@ -92,6 +93,21 @@ def build_parser() -> argparse.ArgumentParser:
     drift.add_argument("--metrics", default="reports/feature-drift.json")
     drift.add_argument("--summary", default="reports/feature-drift.md")
     drift.add_argument("--seed", type=int, default=42)
+
+    robust = commands.add_parser(
+        "robust-preprocessing",
+        help="Select a source-only preprocessing strategy and evaluate on CIC",
+    )
+    robust.add_argument("--unsw-train", default="data/UNSW_NB15_training-set.csv")
+    robust.add_argument("--cic", default="data/CIC-IDS2017")
+    robust.add_argument("--target-fpr", type=float, default=0.10)
+    robust.add_argument("--validation-size", type=float, default=0.20)
+    robust.add_argument("--chunk-size", type=int, default=100_000)
+    robust.add_argument("--max-cic-rows", type=int)
+    robust.add_argument("--models", default="artifacts/robust-preprocessing.joblib")
+    robust.add_argument("--metrics", default="reports/robust-preprocessing.json")
+    robust.add_argument("--summary", default="reports/robust-preprocessing.md")
+    robust.add_argument("--seed", type=int, default=42)
     return parser
 
 
@@ -226,6 +242,37 @@ def main() -> int:
                     f"  {item['feature']}: PSI={psi} "
                     f"KS={item['ks_statistic']:.4f} ({item['severity']})"
                 )
+            print(f"Metrics: {args.metrics}")
+            print(f"Summary: {args.summary}")
+        elif args.command == "robust-preprocessing":
+            metrics = compare_source_only_preprocessing(
+                args.unsw_train,
+                args.cic,
+                args.models,
+                args.metrics,
+                args.summary,
+                target_fpr=args.target_fpr,
+                validation_size=args.validation_size,
+                seed=args.seed,
+                chunk_size=args.chunk_size,
+                max_cic_rows=args.max_cic_rows,
+            )
+            print("Source-only preprocessing: UNSW-NB15 -> CIC-IDS2017")
+            print(f"CIC rows: {metrics['target_test_rows']}")
+            print(
+                "Selected using UNSW only: "
+                f"{metrics['selected_on_source_validation']}"
+            )
+            for name, result in metrics["preprocessing_candidates"].items():
+                source = result["source_validation_metrics"]
+                target = result["target_test_metrics"]
+                print(
+                    f"{name}: source-F1={source['macro_f1']:.4f} "
+                    f"target-F1={target['macro_f1']:.4f} "
+                    f"target-FPR={target['false_positive_rate']:.4f} "
+                    f"target-AUC={target['roc_auc']:.4f}"
+                )
+            print(f"Models: {args.models}")
             print(f"Metrics: {args.metrics}")
             print(f"Summary: {args.summary}")
         elif args.command == "calibrate-unsw":

@@ -16,6 +16,7 @@ from netguard_ids.cross_dataset import (
     run_cross_dataset_experiment,
 )
 from netguard_ids.drift import analyze_domain_shift
+from netguard_ids.robustness import PREPROCESSING_NAMES, compare_source_only_preprocessing
 from netguard_ids.unsw import UNSW_NUMERIC_FEATURES
 
 
@@ -165,6 +166,39 @@ class CrossDatasetTests(unittest.TestCase):
             self.assertEqual(forward["severity"], "high")
             self.assertTrue(metrics_file.exists())
             self.assertIn("No CIC labels were used", summary.read_text(encoding="utf-8"))
+
+    def test_source_only_preprocessing_selection_is_recorded(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            unsw = root / "UNSW_NB15_training-set.csv"
+            cic = root / "CIC.csv"
+            models = root / "robust.joblib"
+            metrics_file = root / "robust.json"
+            summary = root / "robust.md"
+            self._unsw_frame(140).to_csv(unsw, index=False)
+            self._cic_frame(60).to_csv(cic, index=False)
+
+            metrics = compare_source_only_preprocessing(
+                unsw,
+                cic,
+                models,
+                metrics_file,
+                summary,
+                chunk_size=17,
+            )
+
+            self.assertEqual(metrics["target_test_rows"], 60)
+            self.assertIn(metrics["selected_on_source_validation"], PREPROCESSING_NAMES)
+            self.assertTrue(metrics["selection_locked_before_target_evaluation"])
+            self.assertEqual(
+                list(metrics["preprocessing_candidates"]), PREPROCESSING_NAMES
+            )
+            self.assertTrue(models.exists())
+            self.assertTrue(metrics_file.exists())
+            self.assertIn(
+                "Selection locked before target evaluation: yes",
+                summary.read_text(encoding="utf-8"),
+            )
 
 
 if __name__ == "__main__":

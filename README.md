@@ -23,6 +23,7 @@ cross-dataset generalization in network intrusion detection.
 - Cross-dataset UNSW-NB15 to CIC-IDS2017 generalization experiment
 - Leakage-aware three-model cross-dataset benchmark with runtime measurements
 - Label-free feature-drift diagnostics across source and target datasets
+- Source-only robust-preprocessing comparison with locked target evaluation
 - Automated unit tests and GitHub Actions
 
 ## Quick start
@@ -228,10 +229,27 @@ cutoffs are diagnostic heuristics, not universal laws. See
 analysis is documented in
 [`docs/FEATURE_DRIFT_RESULTS.md`](docs/FEATURE_DRIFT_RESULTS.md).
 
+### Test source-only robust preprocessing
+
+Compare standard scaling, robust scaling, and a quantile-to-normal mapping:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli robust-preprocessing
+```
+
+All preprocessing is fitted on the UNSW fit partition, thresholds and the
+candidate winner are selected on UNSW validation data, and that choice is
+locked before CIC files are read. CIC labels are used only for the final
+descriptive comparison. See
+[`docs/ROBUST_PREPROCESSING.md`](docs/ROBUST_PREPROCESSING.md). In the complete
+run, the source-selected quantile-normal pipeline improved target macro F1 from
+0.4494 to 0.5433 and reduced target FPR from 0.5443 to 0.3850. See the
+[`full-dataset results`](docs/ROBUST_PREPROCESSING_RESULTS.md).
+
 ## Research direction
 
-The next research milestone will use the drift findings to define a
-source-only mitigation and then validate it on a third dataset. The focus
+The next research milestone will validate any source-selected robustness
+finding on a third untouched dataset. The focus
 remains cross-dataset performance, false positives,
 explainability, and resource cost rather than accuracy alone.
 See [`docs/RESEARCH_ROADMAP.md`](docs/RESEARCH_ROADMAP.md).

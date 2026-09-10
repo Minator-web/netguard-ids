@@ -68,7 +68,12 @@ def _load_dependencies():
         )
         from sklearn.model_selection import train_test_split
         from sklearn.pipeline import Pipeline
-        from sklearn.preprocessing import OneHotEncoder, StandardScaler
+        from sklearn.preprocessing import (
+            OneHotEncoder,
+            QuantileTransformer,
+            RobustScaler,
+            StandardScaler,
+        )
     except ImportError as exc:
         raise RuntimeError("UNSW support requires: pip install '.[ml]'") from exc
     return {
@@ -90,6 +95,8 @@ def _load_dependencies():
         "train_test_split": train_test_split,
         "Pipeline": Pipeline,
         "OneHotEncoder": OneHotEncoder,
+        "QuantileTransformer": QuantileTransformer,
+        "RobustScaler": RobustScaler,
         "StandardScaler": StandardScaler,
         "ks_2samp": ks_2samp,
     }
