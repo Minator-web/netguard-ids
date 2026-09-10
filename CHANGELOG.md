@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.0 - 2026-09-10
+
+- Compare SGD Logistic, Random Forest, and Histogram Gradient Boosting models.
+- Use identical UNSW fit/validation rows and ten shared features for every model.
+- Calibrate each threshold independently using only UNSW validation predictions.
+- Read CIC-IDS2017 once and evaluate all models on the same target rows.
+- Report fit time, target inference throughput, and generalization gaps.
+- Warn that CIC results are exploratory and require a third dataset for confirmation.
+- Add an end-to-end three-model benchmark test.
+- Document the complete 2,830,743-row benchmark results and tradeoffs.
+
 ## 0.6.0 - 2026-09-09
 
 - Add a chunked CIC-IDS2017 CSV adapter for memory-safe evaluation.

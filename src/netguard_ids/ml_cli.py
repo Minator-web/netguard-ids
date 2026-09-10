@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from .cross_dataset import run_cross_dataset_experiment
+from .cross_dataset import benchmark_cross_dataset_models, run_cross_dataset_experiment
 from .ml import generate_demo_dataset, predict_csv, train_model
 from .unsw import calibrate_unsw_threshold, train_unsw_model
 
@@ -64,6 +64,21 @@ def build_parser() -> argparse.ArgumentParser:
     cross.add_argument("--metrics", default="reports/cross-dataset-metrics.json")
     cross.add_argument("--summary", default="reports/cross-dataset-summary.md")
     cross.add_argument("--seed", type=int, default=42)
+
+    benchmark = commands.add_parser(
+        "benchmark-models",
+        help="Compare three models across UNSW-NB15 and CIC-IDS2017",
+    )
+    benchmark.add_argument("--unsw-train", default="data/UNSW_NB15_training-set.csv")
+    benchmark.add_argument("--cic", default="data/CIC-IDS2017")
+    benchmark.add_argument("--target-fpr", type=float, default=0.10)
+    benchmark.add_argument("--validation-size", type=float, default=0.20)
+    benchmark.add_argument("--chunk-size", type=int, default=100_000)
+    benchmark.add_argument("--max-cic-rows", type=int)
+    benchmark.add_argument("--models", default="artifacts/model-benchmark.joblib")
+    benchmark.add_argument("--metrics", default="reports/model-benchmark.json")
+    benchmark.add_argument("--summary", default="reports/model-benchmark.md")
+    benchmark.add_argument("--seed", type=int, default=42)
     return parser
 
 
@@ -144,6 +159,33 @@ def main() -> int:
             )
             print(f"Macro-F1 generalization gap: {gap['macro_f1']:+.4f}")
             print(f"Model: {args.model}")
+            print(f"Metrics: {args.metrics}")
+            print(f"Summary: {args.summary}")
+        elif args.command == "benchmark-models":
+            metrics = benchmark_cross_dataset_models(
+                args.unsw_train,
+                args.cic,
+                args.models,
+                args.metrics,
+                args.summary,
+                target_fpr=args.target_fpr,
+                validation_size=args.validation_size,
+                seed=args.seed,
+                chunk_size=args.chunk_size,
+                max_cic_rows=args.max_cic_rows,
+            )
+            print("Model benchmark: UNSW-NB15 -> CIC-IDS2017")
+            print(f"CIC rows: {metrics['target_test_rows']}")
+            for name, result in metrics["models"].items():
+                source = result["source_validation_metrics"]
+                target = result["target_test_metrics"]
+                print(
+                    f"{name}: source-F1={source['macro_f1']:.4f} "
+                    f"target-F1={target['macro_f1']:.4f} "
+                    f"target-FPR={target['false_positive_rate']:.4f} "
+                    f"target-AUC={target['roc_auc']:.4f}"
+                )
+            print(f"Models: {args.models}")
             print(f"Metrics: {args.metrics}")
             print(f"Summary: {args.summary}")
         elif args.command == "calibrate-unsw":

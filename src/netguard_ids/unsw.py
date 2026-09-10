@@ -53,6 +53,7 @@ def _load_dependencies():
         import numpy as np
         import pandas as pd
         from sklearn.compose import ColumnTransformer
+        from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
         from sklearn.impute import SimpleImputer
         from sklearn.linear_model import SGDClassifier
         from sklearn.metrics import (
@@ -74,6 +75,8 @@ def _load_dependencies():
         "np": np,
         "pd": pd,
         "ColumnTransformer": ColumnTransformer,
+        "HistGradientBoostingClassifier": HistGradientBoostingClassifier,
+        "RandomForestClassifier": RandomForestClassifier,
         "SimpleImputer": SimpleImputer,
         "SGDClassifier": SGDClassifier,
         "accuracy_score": accuracy_score,

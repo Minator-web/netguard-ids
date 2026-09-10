@@ -21,6 +21,8 @@ cross-dataset generalization in network intrusion detection.
 - Accuracy, macro F1, per-class metrics, and confusion matrix export
 - Validation-only alert-threshold calibration with untouched test evaluation
 - Cross-dataset UNSW-NB15 to CIC-IDS2017 generalization experiment
+- Fair three-model cross-dataset benchmark with runtime measurements
+- Leakage-aware three-model cross-dataset benchmark with runtime measurements
 - Automated unit tests and GitHub Actions
 
 ## Quick start
@@ -191,10 +193,43 @@ check only, `--max-cic-rows` can limit input rows; never report a limited run as
 the full experiment. See [`docs/CROSS_DATASET.md`](docs/CROSS_DATASET.md) and
 the [`full-dataset results`](docs/CROSS_DATASET_RESULTS.md).
 
+### Compare model families
+
+Run the same leakage-aware experiment with SGD Logistic, Random Forest, and
+Histogram Gradient Boosting:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli benchmark-models
+```
+
+All three models receive identical UNSW fit/validation rows and shared
+features. Each threshold is selected independently on UNSW validation data,
+then all models are evaluated on the same CIC rows in one pass. The report also
+includes fit time and target inference throughput. CIC results are exploratory;
+a third untouched dataset is needed to confirm any model selected from this
+comparison. See [`docs/MODEL_BENCHMARK.md`](docs/MODEL_BENCHMARK.md).
+The complete 2,830,743-row run is documented in
+[`docs/MODEL_BENCHMARK_RESULTS.md`](docs/MODEL_BENCHMARK_RESULTS.md).
+
+### Compare three model families
+
+Run SGD Logistic, Random Forest, and Histogram Gradient Boosting with the same
+UNSW split, shared features, and 10% source-validation FPR target:
+
+```powershell
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli benchmark-models
+```
+
+CIC-IDS2017 is read once and all three frozen models are evaluated on the same
+rows. The output includes source/target metrics, fit time, and target inference
+throughput. CIC scores are exploratory: choosing or tuning a model from those
+scores requires confirmation on a third untouched dataset. See
+[`docs/MODEL_BENCHMARK.md`](docs/MODEL_BENCHMARK.md).
+
 ## Research direction
 
-The next research milestone will compare stronger baselines and domain-shift
-mitigations. The focus remains cross-dataset performance, false positives,
+The next research milestone will evaluate domain-shift mitigations and a third
+dataset. The focus remains cross-dataset performance, false positives,
 explainability, and resource cost rather than accuracy alone.
 See [`docs/RESEARCH_ROADMAP.md`](docs/RESEARCH_ROADMAP.md).
 

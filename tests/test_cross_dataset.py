@@ -10,7 +10,11 @@ try:
 except ImportError:
     ML_AVAILABLE = False
 
-from netguard_ids.cross_dataset import run_cross_dataset_experiment
+from netguard_ids.cross_dataset import (
+    MODEL_NAMES,
+    benchmark_cross_dataset_models,
+    run_cross_dataset_experiment,
+)
 from netguard_ids.unsw import UNSW_NUMERIC_FEATURES
 
 
@@ -98,6 +102,36 @@ class CrossDatasetTests(unittest.TestCase):
                 "Generalization gap",
                 summary.read_text(encoding="utf-8"),
             )
+
+    def test_three_model_benchmark_uses_same_target_rows(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            unsw = root / "UNSW_NB15_training-set.csv"
+            cic = root / "CIC.csv"
+            models = root / "models.joblib"
+            metrics_file = root / "metrics.json"
+            summary = root / "summary.md"
+            self._unsw_frame(120).to_csv(unsw, index=False)
+            self._cic_frame(50).to_csv(cic, index=False)
+
+            metrics = benchmark_cross_dataset_models(
+                unsw,
+                cic,
+                models,
+                metrics_file,
+                summary,
+                chunk_size=13,
+            )
+
+            self.assertEqual(list(metrics["models"]), MODEL_NAMES)
+            self.assertEqual(metrics["target_test_rows"], 50)
+            for result in metrics["models"].values():
+                self.assertIn("source_validation_metrics", result)
+                self.assertIn("target_test_metrics", result)
+                self.assertGreater(result["target_rows_per_second"], 0)
+            self.assertTrue(models.exists())
+            self.assertTrue(metrics_file.exists())
+            self.assertIn("random_forest", summary.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

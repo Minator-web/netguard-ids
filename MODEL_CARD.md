@@ -38,5 +38,10 @@ an unchanged evaluation on all 2,830,743 CIC-IDS2017 flow rows. The target
 ROC AUC was 0.5655 and the target false-positive rate was 0.5443, demonstrating
 substantial domain shift. See [`docs/CROSS_DATASET_RESULTS.md`](docs/CROSS_DATASET_RESULTS.md).
 
+Version 0.7 compared the linear baseline with Random Forest and Histogram
+Gradient Boosting under the same protocol. The nonlinear models improved UNSW
+validation macro F1 above 0.93 but transferred worse to CIC. Complete results
+are in [`docs/MODEL_BENCHMARK_RESULTS.md`](docs/MODEL_BENCHMARK_RESULTS.md).
+
 The cross-dataset model uses ten harmonized numeric flow features. It is a
 research baseline and is not suitable for operational deployment.
