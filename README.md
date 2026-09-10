@@ -21,8 +21,8 @@ cross-dataset generalization in network intrusion detection.
 - Accuracy, macro F1, per-class metrics, and confusion matrix export
 - Validation-only alert-threshold calibration with untouched test evaluation
 - Cross-dataset UNSW-NB15 to CIC-IDS2017 generalization experiment
-- Fair three-model cross-dataset benchmark with runtime measurements
 - Leakage-aware three-model cross-dataset benchmark with runtime measurements
+- Label-free feature-drift diagnostics across source and target datasets
 - Automated unit tests and GitHub Actions
 
 ## Quick start
@@ -211,25 +211,28 @@ comparison. See [`docs/MODEL_BENCHMARK.md`](docs/MODEL_BENCHMARK.md).
 The complete 2,830,743-row run is documented in
 [`docs/MODEL_BENCHMARK_RESULTS.md`](docs/MODEL_BENCHMARK_RESULTS.md).
 
-### Compare three model families
+### Diagnose feature drift
 
-Run SGD Logistic, Random Forest, and Histogram Gradient Boosting with the same
-UNSW split, shared features, and 10% source-validation FPR target:
+Measure how each shared feature changes between UNSW-NB15 and CIC-IDS2017
+without using CIC labels:
 
 ```powershell
-.\.venv\Scripts\python.exe -m netguard_ids.ml_cli benchmark-models
+.\.venv\Scripts\python.exe -m netguard_ids.ml_cli analyze-drift
 ```
 
-CIC-IDS2017 is read once and all three frozen models are evaluated on the same
-rows. The output includes source/target metrics, fit time, and target inference
-throughput. CIC scores are exploratory: choosing or tuning a model from those
-scores requires confirmation on a third untouched dataset. See
-[`docs/MODEL_BENCHMARK.md`](docs/MODEL_BENCHMARK.md).
+The command scans all CIC rows for missingness and keeps a deterministic,
+uniform random-priority sample for distribution tests. It reports PSI, the KS
+statistic, medians, and median shift scaled by the source IQR. PSI severity
+cutoffs are diagnostic heuristics, not universal laws. See
+[`docs/FEATURE_DRIFT.md`](docs/FEATURE_DRIFT.md). The complete 2,830,743-row
+analysis is documented in
+[`docs/FEATURE_DRIFT_RESULTS.md`](docs/FEATURE_DRIFT_RESULTS.md).
 
 ## Research direction
 
-The next research milestone will evaluate domain-shift mitigations and a third
-dataset. The focus remains cross-dataset performance, false positives,
+The next research milestone will use the drift findings to define a
+source-only mitigation and then validate it on a third dataset. The focus
+remains cross-dataset performance, false positives,
 explainability, and resource cost rather than accuracy alone.
 See [`docs/RESEARCH_ROADMAP.md`](docs/RESEARCH_ROADMAP.md).
 

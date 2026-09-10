@@ -52,6 +52,7 @@ def _load_dependencies():
         import joblib
         import numpy as np
         import pandas as pd
+        from scipy.stats import ks_2samp
         from sklearn.compose import ColumnTransformer
         from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
         from sklearn.impute import SimpleImputer
@@ -90,6 +91,7 @@ def _load_dependencies():
         "Pipeline": Pipeline,
         "OneHotEncoder": OneHotEncoder,
         "StandardScaler": StandardScaler,
+        "ks_2samp": ks_2samp,
     }
 
 

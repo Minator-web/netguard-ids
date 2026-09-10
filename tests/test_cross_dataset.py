@@ -15,6 +15,7 @@ from netguard_ids.cross_dataset import (
     benchmark_cross_dataset_models,
     run_cross_dataset_experiment,
 )
+from netguard_ids.drift import analyze_domain_shift
 from netguard_ids.unsw import UNSW_NUMERIC_FEATURES
 
 
@@ -132,6 +133,38 @@ class CrossDatasetTests(unittest.TestCase):
             self.assertTrue(models.exists())
             self.assertTrue(metrics_file.exists())
             self.assertIn("random_forest", summary.read_text(encoding="utf-8"))
+
+    def test_domain_shift_analysis_detects_changed_features(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            unsw = root / "UNSW_NB15_training-set.csv"
+            cic = root / "CIC.csv"
+            metrics_file = root / "drift.json"
+            summary = root / "drift.md"
+            self._unsw_frame(140).to_csv(unsw, index=False)
+            cic_frame = self._cic_frame(140)
+            cic_frame[" Total Fwd Packets"] *= 1_000
+            cic_frame.to_csv(cic, index=False)
+
+            metrics = analyze_domain_shift(
+                unsw,
+                cic,
+                metrics_file,
+                summary,
+                sample_rows=100,
+                chunk_size=31,
+            )
+
+            self.assertEqual(metrics["target_rows"], 140)
+            self.assertEqual(metrics["target_sample_rows"], 100)
+            self.assertEqual(len(metrics["features"]), 10)
+            self.assertGreaterEqual(metrics["severity_counts"]["high"], 1)
+            forward = next(
+                item for item in metrics["features"] if item["feature"] == "forward_packets"
+            )
+            self.assertEqual(forward["severity"], "high")
+            self.assertTrue(metrics_file.exists())
+            self.assertIn("No CIC labels were used", summary.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

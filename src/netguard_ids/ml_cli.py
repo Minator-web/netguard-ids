@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 
 from .cross_dataset import benchmark_cross_dataset_models, run_cross_dataset_experiment
+from .drift import analyze_domain_shift
 from .ml import generate_demo_dataset, predict_csv, train_model
 from .unsw import calibrate_unsw_threshold, train_unsw_model
 
@@ -79,6 +80,18 @@ def build_parser() -> argparse.ArgumentParser:
     benchmark.add_argument("--metrics", default="reports/model-benchmark.json")
     benchmark.add_argument("--summary", default="reports/model-benchmark.md")
     benchmark.add_argument("--seed", type=int, default=42)
+
+    drift = commands.add_parser(
+        "analyze-drift",
+        help="Measure feature drift from UNSW-NB15 to CIC-IDS2017",
+    )
+    drift.add_argument("--unsw-train", default="data/UNSW_NB15_training-set.csv")
+    drift.add_argument("--cic", default="data/CIC-IDS2017")
+    drift.add_argument("--sample-rows", type=int, default=200_000)
+    drift.add_argument("--chunk-size", type=int, default=100_000)
+    drift.add_argument("--metrics", default="reports/feature-drift.json")
+    drift.add_argument("--summary", default="reports/feature-drift.md")
+    drift.add_argument("--seed", type=int, default=42)
     return parser
 
 
@@ -186,6 +199,33 @@ def main() -> int:
                     f"target-AUC={target['roc_auc']:.4f}"
                 )
             print(f"Models: {args.models}")
+            print(f"Metrics: {args.metrics}")
+            print(f"Summary: {args.summary}")
+        elif args.command == "analyze-drift":
+            metrics = analyze_domain_shift(
+                args.unsw_train,
+                args.cic,
+                args.metrics,
+                args.summary,
+                sample_rows=args.sample_rows,
+                chunk_size=args.chunk_size,
+                seed=args.seed,
+            )
+            counts = metrics["severity_counts"]
+            print("Feature drift: UNSW-NB15 -> CIC-IDS2017")
+            print(f"CIC rows scanned: {metrics['target_rows']}")
+            print(f"Target sample rows: {metrics['target_sample_rows']}")
+            print(
+                f"PSI severity: high={counts['high']} "
+                f"moderate={counts['moderate']} low={counts['low']}"
+            )
+            print("Highest-drift features:")
+            for item in metrics["features"][:5]:
+                psi = "N/A" if item["psi"] is None else f"{item['psi']:.4f}"
+                print(
+                    f"  {item['feature']}: PSI={psi} "
+                    f"KS={item['ks_statistic']:.4f} ({item['severity']})"
+                )
             print(f"Metrics: {args.metrics}")
             print(f"Summary: {args.summary}")
         elif args.command == "calibrate-unsw":

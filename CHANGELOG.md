@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0 - 2026-09-10
+
+- Add unlabeled feature-drift analysis from UNSW-NB15 to CIC-IDS2017.
+- Report source-decile PSI, KS effect size, missingness, and median shifts.
+- Use a seeded random-priority reservoir sample across all CIC CSV chunks.
+- Scan all target rows for exact row counts and missing-value rates.
+- Document heuristic PSI severity thresholds and statistical limitations.
+- Add an end-to-end test that detects intentionally shifted features.
+- Record the complete 2,830,743-row CIC feature-drift results.
+
 ## 0.7.0 - 2026-09-10
 
 - Compare SGD Logistic, Random Forest, and Histogram Gradient Boosting models.
